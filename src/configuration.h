@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RANDOMX_ARGON_LANES        1
 
 //Argon2d salt
-#define RANDOMX_ARGON_SALT         "RandomX\x03"
+#define RANDOMX_ARGON_SALT         "RandomX-Arweave\x01"
 
 //Number of random Cache accesses per Dataset item. Minimum is 2.
 #define RANDOMX_CACHE_ACCESSES     8
@@ -47,10 +47,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RANDOMX_SUPERSCALAR_LATENCY   170
 
 //Dataset base size in bytes. Must be a power of 2.
-#define RANDOMX_DATASET_BASE_SIZE  2147483648
+#define RANDOMX_DATASET_BASE_SIZE  536870912 // 2^29 = 512 Mi (bytes), tweaked for Arweave
 
 //Dataset extra size. Must be divisible by 64.
-#define RANDOMX_DATASET_EXTRA_SIZE 33554368
+#define RANDOMX_DATASET_EXTRA_SIZE 31563008 // 493172 (just an arbitrary number) * 64, tweaked for Arweave
 
 //Number of instructions in a RandomX program. Must be divisible by 8.
 #define RANDOMX_PROGRAM_SIZE       256
@@ -82,7 +82,7 @@ Total sum of frequencies must be 256
 */
 
 //Integer instructions
-#define RANDOMX_FREQ_IADD_RS       16
+#define RANDOMX_FREQ_IADD_RS       25
 #define RANDOMX_FREQ_IADD_M         7
 #define RANDOMX_FREQ_ISUB_R        16
 #define RANDOMX_FREQ_ISUB_M         7
@@ -96,23 +96,23 @@ Total sum of frequencies must be 256
 #define RANDOMX_FREQ_INEG_R         2
 #define RANDOMX_FREQ_IXOR_R        15
 #define RANDOMX_FREQ_IXOR_M         5
-#define RANDOMX_FREQ_IROR_R         8
-#define RANDOMX_FREQ_IROL_R         2
+#define RANDOMX_FREQ_IROR_R        10
+#define RANDOMX_FREQ_IROL_R         0
 #define RANDOMX_FREQ_ISWAP_R        4
 
 //Floating point instructions
-#define RANDOMX_FREQ_FSWAP_R        4
-#define RANDOMX_FREQ_FADD_R        16
+#define RANDOMX_FREQ_FSWAP_R        8
+#define RANDOMX_FREQ_FADD_R        20
 #define RANDOMX_FREQ_FADD_M         5
-#define RANDOMX_FREQ_FSUB_R        16
+#define RANDOMX_FREQ_FSUB_R        20
 #define RANDOMX_FREQ_FSUB_M         5
 #define RANDOMX_FREQ_FSCAL_R        6
-#define RANDOMX_FREQ_FMUL_R        32
+#define RANDOMX_FREQ_FMUL_R        20
 #define RANDOMX_FREQ_FDIV_M         4
 #define RANDOMX_FREQ_FSQRT_R        6
 
 //Control instructions
-#define RANDOMX_FREQ_CBRANCH       25
+#define RANDOMX_FREQ_CBRANCH       16
 #define RANDOMX_FREQ_CFROUND        1
 
 //Store instruction
