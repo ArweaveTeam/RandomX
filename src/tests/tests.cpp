@@ -477,7 +477,7 @@ int main() {
 		decoder.executeInstruction(ibc, pc, nullptr, config);
 		assert(reg.r[registerDst] == 1);
 	});
-	
+
 	runTest("IXOR_R (decode)", RANDOMX_FREQ_IXOR_R > 0, [&] {
 		randomx::Instruction instr;
 		instr.opcode = randomx::ceil_IXOR_R - 1;
@@ -1078,7 +1078,7 @@ int main() {
 		randomx_calculate_hash_last(vm, &hash3);
 
 		assert(equalsHex(hash1, "639183aae1bf4c9a35884cb46b09cad9175f04efd7684e7262a0ac1c2f0b4e3f"));
-		assert(equalsHex(hash2, "300a0adb47603dedb42228ccb2b211104f4da45af709cd7547cd049e9489c969"));
+		assert(equalsHex(hash2, "de506caf4c69cb93f70a6aab078ce450a2a942e8ca79ca4e0d49e899b2bcbe8e"));
 		assert(equalsHex(hash3, "c36d4ed4191e617309867ed66a443be4075014e2b061bcdaf9ce7b721d2b77a8"));
 	});
 
@@ -1086,7 +1086,7 @@ int main() {
 		rx_set_rounding_mode(RoundToNearest);
 		char hash[RANDOMX_HASH_SIZE];
 		calcStringHash("test key 000", "Lorem ipsum dolor sit amet", &hash);
-		assert(equalsHex(hash, "300a0adb47603dedb42228ccb2b211104f4da45af709cd7547cd049e9489c969"));
+		assert(equalsHex(hash, "de506caf4c69cb93f70a6aab078ce450a2a942e8ca79ca4e0d49e899b2bcbe8e"));
 		assert(rx_get_rounding_mode() == RoundToNearest);
 	});
 

@@ -1,26 +1,27 @@
 # RandomX design
-To minimize the performance advantage of specialized hardware, a proof of work (PoW) algorithm must achieve *device binding* by targeting specific features of existing general-purpose hardware. This is a complex task because we have to target a large class of devices with different architectures from different manufacturers.
+
+To minimize the performance advantage of specialized hardware, a proof of work (PoW) algorithm must achieve _device binding_ by targeting specific features of existing general-purpose hardware. This is a complex task because we have to target a large class of devices with different architectures from different manufacturers.
 
 There are two distinct classes of general processing devices: central processing units (CPUs) and graphics processing units (GPUs). RandomX targets CPUs for the following reasons:
 
-* CPUs, being less specialized devices, are more prevalent and widely accessible. A CPU-bound algorithm is more egalitarian and allows more participants to join the network. This is one of the goals stated in the original CryptoNote whitepaper [[1](https://cryptonote.org/whitepaper.pdf)]. 
-* A large common subset of native hardware instructions exists among different CPU architectures. The same cannot be said about GPUs. For example, there is no common integer multiplication instruction for NVIDIA and AMD GPUs [[2](https://github.com/ifdefelse/ProgPOW/issues/16)].
-* All major CPU instruction sets are well documented with multiple open source compilers available. In comparison, GPU instruction sets are usually proprietary and may require vendor specific closed-source drivers for maximum performance.
+- CPUs, being less specialized devices, are more prevalent and widely accessible. A CPU-bound algorithm is more egalitarian and allows more participants to join the network. This is one of the goals stated in the original CryptoNote whitepaper [[1](https://cryptonote.org/whitepaper.pdf)].
+- A large common subset of native hardware instructions exists among different CPU architectures. The same cannot be said about GPUs. For example, there is no common integer multiplication instruction for NVIDIA and AMD GPUs [[2](https://github.com/ifdefelse/ProgPOW/issues/16)].
+- All major CPU instruction sets are well documented with multiple open source compilers available. In comparison, GPU instruction sets are usually proprietary and may require vendor specific closed-source drivers for maximum performance.
 
 ## 1. Design considerations
 
-The most basic idea of a CPU-bound proof of work is that the "work" must be dynamic. This takes advantage of the fact that CPUs accept two kinds of inputs: *data* (the main input) and *code* (which specifies what to perform with the data).
+The most basic idea of a CPU-bound proof of work is that the "work" must be dynamic. This takes advantage of the fact that CPUs accept two kinds of inputs: _data_ (the main input) and _code_ (which specifies what to perform with the data).
 
-Conversely, typical cryptographic hashing functions [[3](https://en.wikipedia.org/wiki/Cryptographic_hash_function)] do not represent suitable work for the CPU because their only input is *data*, while the sequence of operations is fixed and can be performed more efficiently by a specialized integrated circuit.
+Conversely, typical cryptographic hashing functions [[3](https://en.wikipedia.org/wiki/Cryptographic_hash_function)] do not represent suitable work for the CPU because their only input is _data_, while the sequence of operations is fixed and can be performed more efficiently by a specialized integrated circuit.
 
 ### 1.1 Dynamic proof of work
 
 A dynamic proof of work algorithm can generally consist of the following 4 steps:
 
-1) Generate a random program.
-2) Translate it into the native machine code of the CPU.
-3) Execute the program.
-4) Transform the output of the program into a cryptographically secure value.
+1. Generate a random program.
+2. Translate it into the native machine code of the CPU.
+3. Execute the program.
+4. Transform the output of the program into a cryptographically secure value.
 
 The actual 'useful' CPU-bound work is performed in step 3, so the algorithm must be tuned to minimize the overhead of the remaining steps.
 
@@ -28,10 +29,10 @@ The actual 'useful' CPU-bound work is performed in step 3, so the algorithm must
 
 Early attempts at a dynamic proof of work design were based on generating a program in a high-level language, such as C or Javascript [[4](https://github.com/hyc/randprog), [5](https://github.com/tevador/RandomJS)]. However, this is very inefficient for two main reasons:
 
-* High level languages have a complex syntax, so generating a valid program is relatively slow since it requires the creation of an abstract syntax tree (ASL).
-* Once the source code of the program is generated, the compiler will generally parse the textual representation back into the ASL, which makes the whole process of generating source code redundant.
+- High level languages have a complex syntax, so generating a valid program is relatively slow since it requires the creation of an abstract syntax tree (ASL).
+- Once the source code of the program is generated, the compiler will generally parse the textual representation back into the ASL, which makes the whole process of generating source code redundant.
 
-The fastest way to generate a random program is to use a *logic-less* generator - simply filling a buffer with random data. This of course requires designing a syntaxless programming language (or instruction set) in which all random bit strings represent valid programs.
+The fastest way to generate a random program is to use a _logic-less_ generator - simply filling a buffer with random data. This of course requires designing a syntaxless programming language (or instruction set) in which all random bit strings represent valid programs.
 
 #### 1.1.2 Translating the program into machine code
 
@@ -41,16 +42,16 @@ This step is inevitable because we don't want to limit the algorithm to a specif
 
 The actual program execution should utilize as many CPU components as possible. Some of the features that should be utilized in the program are:
 
-* multi-level caches (L1, L2, L3)
-* μop cache [[6](https://en.wikipedia.org/wiki/CPU_cache#Micro-operation_(%CE%BCop_or_uop)_cache)]
-* arithmetic logic unit (ALU)
-* floating point unit (FPU)
-* memory controller
-* instruction level parallelism [[7](https://en.wikipedia.org/wiki/Instruction-level_parallelism)]
-    * superscalar execution [[8](https://en.wikipedia.org/wiki/Superscalar_processor)]
-    * out-of-order execution [[9](https://en.wikipedia.org/wiki/Out-of-order_execution)]
-    * speculative execution [[10](https://en.wikipedia.org/wiki/Speculative_execution)]
-    * register renaming [[11](https://en.wikipedia.org/wiki/Register_renaming)]
+- multi-level caches (L1, L2, L3)
+- μop cache [[6](<https://en.wikipedia.org/wiki/CPU_cache#Micro-operation_(%CE%BCop_or_uop)_cache>)]
+- arithmetic logic unit (ALU)
+- floating point unit (FPU)
+- memory controller
+- instruction level parallelism [[7](https://en.wikipedia.org/wiki/Instruction-level_parallelism)]
+  - superscalar execution [[8](https://en.wikipedia.org/wiki/Superscalar_processor)]
+  - out-of-order execution [[9](https://en.wikipedia.org/wiki/Out-of-order_execution)]
+  - speculative execution [[10](https://en.wikipedia.org/wiki/Speculative_execution)]
+  - register renaming [[11](https://en.wikipedia.org/wiki/Register_renaming)]
 
 Chapter 2 describes how the RandomX VM takes advantages of these features.
 
@@ -67,7 +68,7 @@ When a random program is generated, one may choose to execute it only when it's 
 1. The runtime of randomly generated programs typically follows a log-normal distribution [[14](https://en.wikipedia.org/wiki/Log-normal_distribution)] (also see Appendix C). A generated program may be quickly analyzed and if it's likely to have above-average runtime, program execution may be skipped and a new program may be generated instead. This can significantly boost performance especially in case the runtime distribution has a heavy tail (many long-running outliers) and if program generation is cheap.
 2. An implementation may choose to optimize for a subset of the features required for program execution. For example, the support for some operations (such as division) may be dropped or some instruction sequences may be implemented more efficiently. Generated programs would then be analyzed and be executed only if they match the specific requirements of the optimized implementation.
 
-These strategies of searching for programs of particular properties deviate from the objectives of this proof of work, so they must be eliminated. This can be achieved by requiring a sequence of *N* random programs to be executed such that each program is generated from the output of the previous one. The output of the final program is then used as the result.
+These strategies of searching for programs of particular properties deviate from the objectives of this proof of work, so they must be eliminated. This can be achieved by requiring a sequence of _N_ random programs to be executed such that each program is generated from the output of the previous one. The output of the final program is then used as the result.
 
 ```
           +---------------+     +---------------+               +---------------+     +---------------+
@@ -89,10 +90,10 @@ Since the purpose of the proof of work is to be used in a trustless peer-to-peer
 
 Besides pure computational resources, such as ALUs and FPUs, CPUs usually have access to a large amount of memory in the form of DRAM [[16](https://en.wikipedia.org/wiki/Dynamic_random-access_memory)]. The performance of the memory subsystem is typically tuned to match the compute capabilities, for example [[17](https://en.wikipedia.org/wiki/Multi-channel_memory_architecture)]:
 
-* single channel memory for embedded and low power CPUs
-* dual channel memory for desktop CPUs 
-* triple or quad channel memory for workstation CPUs
-* six or eight channel memory for high-end server CPUs
+- single channel memory for embedded and low power CPUs
+- dual channel memory for desktop CPUs
+- triple or quad channel memory for workstation CPUs
+- six or eight channel memory for high-end server CPUs
 
 In order to utilize the external memory as well as the on-chip memory controllers, the proof of work algorithm should access a large memory buffer (called the "Dataset"). The Dataset must be:
 
@@ -115,14 +116,17 @@ Given the constraints described in the previous chapters, the maximum possible p
 Additionally, 256 MiB was selected as the maximum amount of memory that can be required in the light-client mode. This amount is acceptable even for small single-board computers such as the Raspberry Pi.
 
 To keep a constant memory-time product, the maximum fast-mode memory requirement is:
+
 ```
 8 * 256 MiB = 2048 MiB
 ```
+
 This can be further increased since the light mode requires additional chip area for the SuperscalarHash function (see chapter 3.4 and chapter 6 of the Specification). Assuming a conservative estimate of 0.2 mm<sup>2</sup> per SuperscalarHash core and DRAM density of 0.149 Gb/mm<sup>2</sup> [[20](http://en.thelec.kr/news/articleView.html?idxno=20)], the additional memory is:
 
 ```
 8 * 0.2 * 0.149 * 1024 / 8 = 30.5 MiB
 ```
+
 or 32 MiB when rounded to the nearest power of 2. The total memory requirement of the fast mode can be 2080 MiB with a roughly constant AT product.
 
 ## 2. Virtual machine architecture
@@ -141,9 +145,9 @@ The VM is a complex instruction set machine that allows both register and memory
 
 The program executed by the VM has the form of a loop consisting of 256 random instructions.
 
-* 256 instructions is long enough to provide a large number of possible programs and enough space for branches. The number of different programs that can be generated is limited to 2<sup>512</sup> = 1.3e+154, which is the number of possible seed values of the random generator.
-* 256 instructions is short enough so that high-performance CPUs can execute one iteration in similar time it takes to fetch data from DRAM. This is advantageous because it allows Dataset accesses to be synchronized and fully prefetchable (see chapter 2.9).
-* Since the program is a loop, it can take advantage of the μop cache [[6](https://en.wikipedia.org/wiki/CPU_cache#Micro-operation_(%CE%BCop_or_uop)_cache)] that is present in some x86 CPUs. Running a loop from the μop cache allows the CPU to power down the x86 instruction decoders, which should help to equalize the power efficiency between x86 and architectures with simple instruction decoding.
+- 256 instructions is long enough to provide a large number of possible programs and enough space for branches. The number of different programs that can be generated is limited to 2<sup>512</sup> = 1.3e+154, which is the number of possible seed values of the random generator.
+- 256 instructions is short enough so that high-performance CPUs can execute one iteration in similar time it takes to fetch data from DRAM. This is advantageous because it allows Dataset accesses to be synchronized and fully prefetchable (see chapter 2.9).
+- Since the program is a loop, it can take advantage of the μop cache [[6](<https://en.wikipedia.org/wiki/CPU_cache#Micro-operation_(%CE%BCop_or_uop)_cache>)] that is present in some x86 CPUs. Running a loop from the μop cache allows the CPU to power down the x86 instruction decoders, which should help to equalize the power efficiency between x86 and architectures with simple instruction decoding.
 
 ### 2.3 Registers
 
@@ -187,7 +191,7 @@ Approximate distribution of floating point register values at the end of each pr
 
 ![Imgur](https://i.imgur.com/64G4qE8.png)
 
-*(Note: bins are marked by the left-side value of the interval, e.g. bin marked `1e-40` contains values from `1e-40` to `1e-20`.)*
+_(Note: bins are marked by the left-side value of the interval, e.g. bin marked `1e-40` contains values from `1e-40` to `1e-20`.)_
 
 The small number of F register values at `1e+14` is caused by the FSCAL instruction, which significantly increases the range of the register values.
 
@@ -199,12 +203,13 @@ To maximize entropy and also to fit into one 64-byte cache line, floating point 
 
 Modern CPUs invest a lot of die area and energy to handle branches. This includes:
 
-* Branch predictor unit [[21](https://en.wikipedia.org/wiki/Branch_predictor)]
-* Checkpoint/rollback states that allow the CPU to recover in case of a branch misprediction.
+- Branch predictor unit [[21](https://en.wikipedia.org/wiki/Branch_predictor)]
+- Checkpoint/rollback states that allow the CPU to recover in case of a branch misprediction.
 
 To take advantage of speculative designs, the random programs should contain branches. However, if branch prediction fails, the speculatively executed instructions are thrown away, which results in a certain amount of wasted energy with each misprediction. Therefore we should aim to minimize the number of mispredictions.
 
 Additionally, branches in the code are essential because they significantly reduce the amount of static optimizations that can be made. For example, consider the following x86 instruction sequence:
+
 ```asm
     ...
 branch_target_00:
@@ -215,6 +220,7 @@ branch_target_00:
     xor r8, r9
     ...
 ```
+
 The XOR operations would normally cancel out, but cannot be optimized away due to the branch because the result will be different if the branch is taken. Similarly, the ISWAP_R instruction could be always statically optimized out if it wasn't for branches.
 
 In general, random branches must be designed in such way that:
@@ -231,15 +237,15 @@ Unfortunately, we haven't found a way how to utilize branch prediction in Random
 
 RandomX therefore uses random branches with a jump probability of 1/256 and branch condition that depends on an integer register value. These branches will be predicted as "not taken" by the CPU. Such branches are "free" in most CPU designs unless they are taken. While this doesn't take advantage of the branch predictors, speculative designs will see a significant performance boost compared to non-speculative branch handling - see Appendix B for more information.
 
-The branching conditions and jump targets are chosen in such way that infinite loops in RandomX code are impossible because the register controlling the branch will never be modified in the repeated code block. Each CBRANCH instruction can jump up to twice in a row. Handling CBRANCH using predicated execution [[22](https://en.wikipedia.org/wiki/Predication_(computer_architecture))] is impractical because the branch is not taken most of the time.
+The branching conditions and jump targets are chosen in such way that infinite loops in RandomX code are impossible because the register controlling the branch will never be modified in the repeated code block. Each CBRANCH instruction can jump up to twice in a row. Handling CBRANCH using predicated execution [[22](<https://en.wikipedia.org/wiki/Predication_(computer_architecture)>)] is impractical because the branch is not taken most of the time.
 
 ### 2.7 Instruction-level parallelism
 
 CPUs improve their performance using several techniques that utilize instruction-level parallelism of the executed code. These techniques include:
 
-* Having multiple execution units that can execute operations in parallel (*superscalar execution*).
-* Executing instruction not in program order, but in the order of operand availability (*out-of-order execution*).
-* Predicting which way branches will go to enhance the benefits of both superscalar and out-of-order execution.
+- Having multiple execution units that can execute operations in parallel (_superscalar execution_).
+- Executing instruction not in program order, but in the order of operand availability (_out-of-order execution_).
+- Predicting which way branches will go to enhance the benefits of both superscalar and out-of-order execution.
 
 RandomX benefits from all these optimizations. See Appendix B for a detailed analysis.
 
@@ -251,11 +257,11 @@ The Scratchpad is used as read-write memory. Its size was selected to fit entire
 
 The Scratchpad is split into 3 levels to mimic the typical CPU cache hierarchy [[23](https://en.wikipedia.org/wiki/CPU_cache)]. Most VM instructions access "L1" and "L2" Scratchpad because L1 and L2 CPU caches are located close to the CPU execution units and provide the best random access latency. The ratio of reads from L1 and L2 is 3:1, which matches the inverse ratio of typical latencies (see table below).
 
-|CPU μ-architecture|L1 latency|L2 latency|L3 latency|source|
-|----------------|----------|----------|----------|------|
-ARM Cortex A55|2|6|-|[[24](https://www.anandtech.com/show/11441/dynamiq-and-arms-new-cpus-cortex-a75-a55/4)]
-|AMD Zen+|4|12|40|[[25](https://en.wikichip.org/wiki/amd/microarchitectures/zen%2B#Memory_Hierarchy)]|
-|Intel Skylake|4|12|42|[[26](https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(client)#Memory_Hierarchy)]
+| CPU μ-architecture | L1 latency | L2 latency | L3 latency | source                                                                                            |
+| ------------------ | ---------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| ARM Cortex A55     | 2          | 6          | -          | [[24](https://www.anandtech.com/show/11441/dynamiq-and-arms-new-cpus-cortex-a75-a55/4)]           |
+| AMD Zen+           | 4          | 12         | 40         | [[25](https://en.wikichip.org/wiki/amd/microarchitectures/zen%2B#Memory_Hierarchy)]               |
+| Intel Skylake      | 4          | 12         | 42         | [[26](<https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(client)#Memory_Hierarchy>)] |
 
 The L3 cache is much larger and located further from the CPU core. As a result, its access latencies are much higher and can cause stalls in program execution.
 
@@ -280,8 +286,8 @@ See Appendix D for the analysis of Scratchpad entropy.
 
 Programs make, on average, 39 reads (instructions IADD_M, ISUB_M, IMUL_M, IMULH_M, ISMULH_M, IXOR_M, FADD_M, FSUB_M, FDIV_M) and 16 writes (instruction ISTORE) to the Scratchpad per program iteration. Additional 128 bytes are read and written implicitly to initialize and store register values. 64 bytes of data is read from the Dataset per iteration. In total:
 
-* The average amount of data read from memory per program iteration is: 39 * 8 + 128 + 64 = **504 bytes**.
-* The average mount of data written to memory per program iteration is: 16 * 8 + 128 = **256 bytes**.
+- The average amount of data read from memory per program iteration is: 39 \* 8 + 128 + 64 = **504 bytes**.
+- The average mount of data written to memory per program iteration is: 16 \* 8 + 128 = **256 bytes**.
 
 This is close to a 2:1 read/write ratio, which CPUs are optimized for.
 
@@ -321,7 +327,7 @@ AesHash was designed for the fastest possible calculation of the Scratchpad fing
 
 SuperscalarHash was designed to burn as much power as possible while the CPU is waiting for data to be loaded from DRAM. The target latency of 170 cycles corresponds to the usual DRAM latency of 40-80 ns and clock frequency of 2-4 GHz. ASIC devices designed for light-mode mining with low-latency memory will be bottlenecked by SuperscalarHash when calculating Dataset items and their efficiency will be destroyed by the high power usage of SuperscalarHash.
 
-The average SuperscalarHash function contains a total of 450 instructions, out of which 155 are 64-bit multiplications. On average, the longest dependency chain is 95 instructions long. An ASIC design for light-mode mining, with 256 MiB of on-die memory and 1-cycle latency for all operations, will need on average 95 * 8 = 760 cycles to construct a Dataset item, assuming unlimited parallelization. It will have to execute 155 * 8 = 1240 64-bit multiplications per item, which will consume energy comparable to loading 64 bytes from DRAM.
+The average SuperscalarHash function contains a total of 450 instructions, out of which 155 are 64-bit multiplications. On average, the longest dependency chain is 95 instructions long. An ASIC design for light-mode mining, with 256 MiB of on-die memory and 1-cycle latency for all operations, will need on average 95 _ 8 = 760 cycles to construct a Dataset item, assuming unlimited parallelization. It will have to execute 155 _ 8 = 1240 64-bit multiplications per item, which will consume energy comparable to loading 64 bytes from DRAM.
 
 ## Appendix
 
@@ -329,14 +335,13 @@ The average SuperscalarHash function contains a total of 450 instructions, out o
 
 Chapter 1.2 describes why `N` random programs are chained to prevent mining strategies that search for 'easy' programs. RandomX uses a value of `N = 8`.
 
-Let's define `Q` as the ratio of acceptable programs in a strategy that uses filtering. For example `Q = 0.75` means that 25% of programs are rejected. 
+Let's define `Q` as the ratio of acceptable programs in a strategy that uses filtering. For example `Q = 0.75` means that 25% of programs are rejected.
 
 For `N = 1`, there are no wasted program executions and the only cost is program generation and the filtering itself. The calculations below assume that these costs are zero and the only real cost is program execution. However, this is a simplification because program generation in RandomX is not free (the first program generation requires full Scratchpad initialization), but it describes a best-case scenario for an attacker.
 
+For `N > 1`, the first program can be filtered as usual, but after the program is executed, there is a chance of `1-Q` that the next program should be rejected and we have wasted one program execution.
 
- For `N > 1`, the first program can be filtered as usual, but after the program is executed, there is a chance of `1-Q` that the next program should be rejected and we have wasted one program execution.
-
-For `N` chained executions, the chance is only <code>Q<sup>N</sup></code> that all programs in the chain are acceptable. However, during each attempt to find such chain, we will waste the execution of some programs. For `N = 8`, the number of wasted programs per attempt is equal to <code>(1-Q)*(1+2\*Q+3\*Q<sup>2</sup>+4\*Q<sup>3</sup>+5\*Q<sup>4</sup>+6\*Q<sup>5</sup>+7\*Q<sup>6</sup>)</code> (approximately 2.5 for `Q = 0.75`).
+For `N` chained executions, the chance is only <code>Q<sup>N</sup></code> that all programs in the chain are acceptable. However, during each attempt to find such chain, we will waste the execution of some programs. For `N = 8`, the number of wasted programs per attempt is equal to <code>(1-Q)\*(1+2\*Q+3\*Q<sup>2</sup>+4\*Q<sup>3</sup>+5\*Q<sup>4</sup>+6\*Q<sup>5</sup>+7\*Q<sup>6</sup>)</code> (approximately 2.5 for `Q = 0.75`).
 
 Let's consider 3 mining strategies:
 
@@ -356,12 +361,12 @@ Miner that can execute all programs, but rejects 25% of the slowest programs for
 
 The table below lists the results for the above 3 strategies and different values of `N`. The columns **N(I)**, **N(II)** and **N(III)** list the number of programs that each strategy has to execute on average to get one valid hash result (this includes programs wasted in rejected chains). Columns **Speed(I)**, **Speed(II)** and **Speed(III)** list the average mining performance relative to strategy I.
 
-|N|N(I)|N(II)|N(III)|Speed(I)|Speed(II)|Speed(III)|
-|---|----|----|----|---------|---------|---------|
-|1|1|1|1|1.00|1.50|1.05|
-|2|2|2.3|2|1.00|1.28|1.02|
-|4|4|6.5|4|1.00|0.92|1.01|
-|8|8|27.0|8|1.00|0.44|1.00|
+| N   | N(I) | N(II) | N(III) | Speed(I) | Speed(II) | Speed(III) |
+| --- | ---- | ----- | ------ | -------- | --------- | ---------- |
+| 1   | 1    | 1     | 1      | 1.00     | 1.50      | 1.05       |
+| 2   | 2    | 2.3   | 2      | 1.00     | 1.28      | 1.02       |
+| 4   | 4    | 6.5   | 4      | 1.00     | 0.92      | 1.01       |
+| 8   | 8    | 27.0  | 8      | 1.00     | 0.44      | 1.00       |
 
 For `N = 8`, strategy II will perform at less than half the speed of the honest miner despite having a 50% performance advantage for selected programs. The small statistical advantage of strategy III is negligible with `N = 8`.
 
@@ -372,6 +377,7 @@ As discussed in chapter 2.7, RandomX aims to take advantage of the complex desig
 #### CPU model
 
 The model CPU uses a 3-stage pipeline to achieve an ideal throughput of 1 instruction per cycle:
+
 ```
         (1)                        (2)                     (3)
 +------------------+       +----------------+      +----------------+
@@ -380,6 +386,7 @@ The model CPU uses a 3-stage pipeline to achieve an ideal throughput of 1 instru
 |    + decode      |       |                |      |                |
 +------------------+       +----------------+      +----------------+
 ```
+
 The 3 stages are:
 
 1. Instruction fetch and decode. This stage loads the instruction from the Program Buffer and decodes the instruction operation and operands.
@@ -392,8 +399,8 @@ Note that this is an optimistically short pipeline that would not allow very hig
 
 Our model CPU contains two kinds of components:
 
-* Execution unit (EXU) - it is used to perform the actual integer or floating point operation. All RandomX instructions except ISTORE must use an execution unit in the 3rd pipeline stage. All operations are considered to take only 1 clock cycle.
-* Memory unit (MEM) - it is used for loads and stores into Scratchpad. All memory instructions (including ISTORE) use a memory unit in the 2nd pipeline stage.
+- Execution unit (EXU) - it is used to perform the actual integer or floating point operation. All RandomX instructions except ISTORE must use an execution unit in the 3rd pipeline stage. All operations are considered to take only 1 clock cycle.
+- Memory unit (MEM) - it is used for loads and stores into Scratchpad. All memory instructions (including ISTORE) use a memory unit in the 2nd pipeline stage.
 
 A superscalar design will contain multiple execution or memory units to improve performance.
 
@@ -415,18 +422,18 @@ The simulation model supports two types of branch handling:
 
 The following 10 designs were simulated and the average number of clock cycles to execute a RandomX program (256 instructions) was measured.
 
-|design|superscalar config.|reordering|branch handling|execution time [cycles]|IPC|
-|-------|-----------|----------|---------------|-----------------------|---|
-|#1|1 EXU + 1 MEM|in-order|non-speculative|293|0.87|
-|#2|1 EXU + 1 MEM|in-order|speculative|262|0.98|
-|#3|2 EXU + 1 MEM|in-order|non-speculative|197|1.3|
-|#4|2 EXU + 1 MEM|in-order|speculative|161|1.6|
-|#5|2 EXU + 1 MEM|out-of-order|non-speculative|144|1.8|
-|#6|2 EXU + 1 MEM|out-of-order|speculative|122|2.1|
-|#7|4 EXU + 2 MEM|in-order|non-speculative|135|1.9|
-|#8|4 EXU + 2 MEM|in-order|speculative|99|2.6|
-|#9|4 EXU + 2 MEM|out-of-order|non-speculative|89|2.9|
-|#10|4 EXU + 2 MEM|out-of-order|speculative|64|4.0|
+| design | superscalar config. | reordering   | branch handling | execution time [cycles] | IPC  |
+| ------ | ------------------- | ------------ | --------------- | ----------------------- | ---- |
+| #1     | 1 EXU + 1 MEM       | in-order     | non-speculative | 293                     | 0.87 |
+| #2     | 1 EXU + 1 MEM       | in-order     | speculative     | 262                     | 0.98 |
+| #3     | 2 EXU + 1 MEM       | in-order     | non-speculative | 197                     | 1.3  |
+| #4     | 2 EXU + 1 MEM       | in-order     | speculative     | 161                     | 1.6  |
+| #5     | 2 EXU + 1 MEM       | out-of-order | non-speculative | 144                     | 1.8  |
+| #6     | 2 EXU + 1 MEM       | out-of-order | speculative     | 122                     | 2.1  |
+| #7     | 4 EXU + 2 MEM       | in-order     | non-speculative | 135                     | 1.9  |
+| #8     | 4 EXU + 2 MEM       | in-order     | speculative     | 99                      | 2.6  |
+| #9     | 4 EXU + 2 MEM       | out-of-order | non-speculative | 89                      | 2.9  |
+| #10    | 4 EXU + 2 MEM       | out-of-order | speculative     | 64                      | 4.0  |
 
 The benefits of superscalar, out-of-order and speculative designs are clearly demonstrated.
 
@@ -442,10 +449,10 @@ The following figure shows the distribution of the runtimes of a single VM progr
 
 AMD Ryzen 7 1700 can calculate 625 hashes per second in fast mode (using 1 thread), which means a single hash result takes 1600 μs (1.6 ms). This consists of (approximately):
 
-* 1480 μs for VM execution (8 programs)
-* 45 μs for initial Scratchpad fill (AesGenerator1R).
-* 45 μs for final Scratchpad hash (AesHash1R).
-* 30 μs for program generation and JIT compilation (8 programs)
+- 1480 μs for VM execution (8 programs)
+- 45 μs for initial Scratchpad fill (AesGenerator1R).
+- 45 μs for final Scratchpad hash (AesHash1R).
+- 30 μs for program generation and JIT compilation (8 programs)
 
 This gives a total overhead of 7.5% (time per hash spent not executing VM).
 
@@ -474,7 +481,7 @@ The following figure shows the sensitivity of SuperscalarHash to changing a sing
 
 This shows that SuperscalaHash has quite low sensitivity to high-order bits and somewhat decreased sensitivity to the lowest-order bits. Sensitivity is highest for bits 3-53 (inclusive).
 
-When calculating a Dataset item, the input of the first SuperscalarHash depends only on the item number. To ensure a good distribution of results, the constants described in section 7.3 of the Specification were chosen to provide unique values of bits 3-53 for *all* item numbers in the range 0-34078718 (the Dataset contains 34078719 items). All initial register values for all Dataset item numbers were checked to make sure bits 3-53 of each register are unique and there are no collisions (source code: [superscalar-init.cpp](../src/tests/superscalar-init.cpp)). While this is not strictly necessary to get unique output from SuperscalarHash, it's a security precaution that mitigates the non-perfect avalanche properties of the randomly generated SuperscalarHash instances.
+When calculating a Dataset item, the input of the first SuperscalarHash depends only on the item number. To ensure a good distribution of results, the constants described in section 7.3 of the Specification were chosen to provide unique values of bits 3-53 for _all_ item numbers in the range 0-34078718 (the Dataset contains 34078719 items). All initial register values for all Dataset item numbers were checked to make sure bits 3-53 of each register are unique and there are no collisions (source code: [superscalar-init.cpp](../src/tests/superscalar-init.cpp)). While this is not strictly necessary to get unique output from SuperscalarHash, it's a security precaution that mitigates the non-perfect avalanche properties of the randomly generated SuperscalarHash instances.
 
 ## References
 
