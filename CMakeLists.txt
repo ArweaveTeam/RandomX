@@ -211,7 +211,20 @@ endif()
 
 set(RANDOMX_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "RandomX Include path")
 
+# Define variables for custom preprocessor definitions with default values
+set(RANDOMX_ARGON_MEMORY "" CACHE STRING "Set the RANDOMX_ARGON_MEMORY value")
+set(RANDOMX_DATASET_BASE_SIZE "" CACHE STRING "Set the RANDOMX_DATASET_BASE_SIZE value")
+
 add_library(randomx ${randomx_sources})
+
+# Apply the custom preprocessor definitions only if they are set
+if(RANDOMX_ARGON_MEMORY)
+  target_compile_definitions(randomx PRIVATE RANDOMX_ARGON_MEMORY=${RANDOMX_ARGON_MEMORY})
+endif()
+
+if(RANDOMX_DATASET_BASE_SIZE)
+  target_compile_definitions(randomx PRIVATE RANDOMX_DATASET_BASE_SIZE=${RANDOMX_DATASET_BASE_SIZE})
+endif()
 
 if(TARGET generate-asm)
   add_dependencies(randomx generate-asm)

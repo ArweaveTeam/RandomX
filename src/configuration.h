@@ -29,7 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 //Cache size in KiB. Must be a power of 2.
+#ifndef RANDOMX_ARGON_MEMORY
 #define RANDOMX_ARGON_MEMORY       262144
+#endif
 
 //Number of Argon2d iterations for Cache initialization.
 #define RANDOMX_ARGON_ITERATIONS   3
@@ -47,7 +49,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RANDOMX_SUPERSCALAR_LATENCY   170
 
 //Dataset base size in bytes. Must be a power of 2.
+#ifndef RANDOMX_DATASET_BASE_SIZE
 #define RANDOMX_DATASET_BASE_SIZE  536870912 // 2^29 = 512 Mi (bytes), tweaked for Arweave
+#endif
 
 //Dataset extra size. Must be divisible by 64.
 #define RANDOMX_DATASET_EXTRA_SIZE 31563008 // 493172 (just an arbitrary number) * 64, tweaked for Arweave
