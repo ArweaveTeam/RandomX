@@ -6,4 +6,4 @@ obj/
 x64/
 Release/
 Debug/
-build/
+build*/
