@@ -145,7 +145,7 @@ extern "C" {
 	}
 
 	randomx_dataset *randomx_alloc_dataset(randomx_flags flags) {
-
+		fprintf(stderr, "randomx_alloc_dataset: %zu\n", randomx::DatasetSize);
 		//fail on 32-bit systems if DatasetSize is >= 4 GiB
 		if (randomx::DatasetSize > std::numeric_limits<size_t>::max()) {
 			return nullptr;
@@ -189,6 +189,7 @@ extern "C" {
 		assert(cache != nullptr);
 		assert(startItem < DatasetItemCount && itemCount <= DatasetItemCount);
 		assert(startItem + itemCount <= DatasetItemCount);
+		fprintf(stderr, "randomx_init_dataset: %zu, %zu, %zu, %zu\n", startItem, itemCount, DatasetItemCount, randomx::CacheLineSize);
 		cache->datasetInit(cache, dataset->memory + startItem * randomx::CacheLineSize, startItem, startItem + itemCount);
 	}
 
@@ -217,6 +218,7 @@ extern "C" {
 					break;
 
 				case RANDOMX_FLAG_FULL_MEM:
+					fprintf(stderr, "RANDOMX_FLAG_FULL_MEM\n");
 					vm = new randomx::InterpretedVmDefault();
 					break;
 

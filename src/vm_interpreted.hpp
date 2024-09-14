@@ -49,6 +49,7 @@ namespace randomx {
 		using VmBase<Allocator, softAes>::datasetPtr;
 		using VmBase<Allocator, softAes>::datasetOffset;
 		void* operator new(size_t size) {
+			fprintf(stderr, "InterpretedVm<Allocator, softAes>::operator new: %zu, %zu\n", CacheLineSize, size);
 			void* ptr = AlignedAllocator<CacheLineSize>::allocMemory(size);
 			if (ptr == nullptr)
 				throw std::bad_alloc();
