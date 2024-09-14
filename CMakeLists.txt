@@ -30,6 +30,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(RandomX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 set(randomx_sources
 src/aes_hash.cpp
 src/argon2_ref.c
@@ -212,8 +214,13 @@ endif()
 set(RANDOMX_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "RandomX Include path")
 
 # Define variables for custom preprocessor definitions with default values
+set(SYMBOL_PREFIX "" CACHE STRING "Prefix to be added to all symbols in the static library")
 set(RANDOMX_ARGON_MEMORY "" CACHE STRING "Set the RANDOMX_ARGON_MEMORY value")
 set(RANDOMX_DATASET_BASE_SIZE "" CACHE STRING "Set the RANDOMX_DATASET_BASE_SIZE value")
+
+if(SYMBOL_PREFIX)
+  add_compile_options("-fsymbol-prefix=${SYMBOL_PREFIX}")
+endif()
 
 add_library(randomx ${randomx_sources})
 
