@@ -54,7 +54,6 @@ namespace randomx {
 
 	template<class Allocator, bool softAes>
 	void InterpretedVm<Allocator, softAes>::execute() {
-
 		NativeRegisterFile nreg;
 
 		for(unsigned i = 0; i < RegisterCountFlt; ++i)
@@ -71,7 +70,7 @@ namespace randomx {
 			spAddr0 &= ScratchpadL3Mask64;
 			spAddr1 ^= spMix >> 32;
 			spAddr1 &= ScratchpadL3Mask64;
-			
+
 			for (unsigned i = 0; i < RegistersCount; ++i)
 				nreg.r[i] ^= load64(scratchpad + spAddr0 + 8 * i);
 
@@ -85,6 +84,7 @@ namespace randomx {
 
 			mem.mx ^= nreg.r[config.readReg2] ^ nreg.r[config.readReg3];
 			mem.mx &= CacheLineAlignMask;
+
 			datasetPrefetch(datasetOffset + mem.mx);
 			datasetRead(datasetOffset + mem.ma, nreg.r);
 			std::swap(mem.mx, mem.ma);
