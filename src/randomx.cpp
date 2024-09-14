@@ -145,7 +145,6 @@ extern "C" {
 	}
 
 	randomx_dataset *randomx_alloc_dataset(randomx_flags flags) {
-		fprintf(stderr, "randomx_alloc_dataset: %zu\n", randomx::DatasetSize);
 		//fail on 32-bit systems if DatasetSize is >= 4 GiB
 		if (randomx::DatasetSize > std::numeric_limits<size_t>::max()) {
 			return nullptr;
