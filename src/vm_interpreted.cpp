@@ -47,30 +47,23 @@ namespace randomx {
 
 	template<class Allocator, bool softAes>
 	void InterpretedVm<Allocator, softAes>::run(void* seed) {
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::run\n");
 		VmBase<Allocator, softAes>::generateProgram(seed);
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::run2\n");
 		randomx_vm::initialize();
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::run3\n");
 		execute();
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::run4\n");
 	}
 
 	template<class Allocator, bool softAes>
 	void InterpretedVm<Allocator, softAes>::execute() {
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute\n");
 		NativeRegisterFile nreg;
 
 		for(unsigned i = 0; i < RegisterCountFlt; ++i)
 			nreg.a[i] = rx_load_vec_f128(&reg.a[i].lo);
 
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute2\n");
 		compileProgram(program, bytecode, nreg);
 
 		uint32_t spAddr0 = mem.mx;
 		uint32_t spAddr1 = mem.ma;
 
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute3\n");
 		for(unsigned ic = 0; ic < RANDOMX_PROGRAM_ITERATIONS; ++ic) {
 			uint64_t spMix = nreg.r[config.readReg0] ^ nreg.r[config.readReg1];
 			spAddr0 ^= spMix;
@@ -78,8 +71,6 @@ namespace randomx {
 			spAddr1 ^= spMix >> 32;
 			spAddr1 &= ScratchpadL3Mask64;
 
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute4\n");
-			
 			for (unsigned i = 0; i < RegistersCount; ++i)
 				nreg.r[i] ^= load64(scratchpad + spAddr0 + 8 * i);
 
@@ -89,59 +80,36 @@ namespace randomx {
 			for (unsigned i = 0; i < RegisterCountFlt; ++i)
 				nreg.e[i] = maskRegisterExponentMantissa(config, rx_cvt_packed_int_vec_f128(scratchpad + spAddr1 + 8 * (RegisterCountFlt + i)));
 
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute5\n");
 			executeBytecode(bytecode, scratchpad, config);
-
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute6\n");
 
 			mem.mx ^= nreg.r[config.readReg2] ^ nreg.r[config.readReg3];
 			mem.mx &= CacheLineAlignMask;
 
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute6.1\n");
-			fprintf(stderr, "%d, %d, %d\n", datasetOffset, mem.mx, mem.ma);
 			datasetPrefetch(datasetOffset + mem.mx);
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute6.2\n");
 			datasetRead(datasetOffset + mem.ma, nreg.r);
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute6.3\n");
 			std::swap(mem.mx, mem.ma);
-
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute7\n");
 
 			for (unsigned i = 0; i < RegistersCount; ++i)
 				store64(scratchpad + spAddr1 + 8 * i, nreg.r[i]);
 
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute8\n");
-
 			for (unsigned i = 0; i < RegisterCountFlt; ++i)
 				nreg.f[i] = rx_xor_vec_f128(nreg.f[i], nreg.e[i]);
 
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute9\n");
-
 			for (unsigned i = 0; i < RegisterCountFlt; ++i)
 				rx_store_vec_f128((double*)(scratchpad + spAddr0 + 16 * i), nreg.f[i]);
-
-			fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute10\n");
 
 			spAddr0 = 0;
 			spAddr1 = 0;
 		}
 
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute11\n");
-
 		for (unsigned i = 0; i < RegistersCount; ++i)
 			store64(&reg.r[i], nreg.r[i]);
-
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute12\n");
 
 		for (unsigned i = 0; i < RegisterCountFlt; ++i)
 			rx_store_vec_f128(&reg.f[i].lo, nreg.f[i]);
 
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute13\n");
-
 		for (unsigned i = 0; i < RegisterCountFlt; ++i)
 			rx_store_vec_f128(&reg.e[i].lo, nreg.e[i]);
-
-		fprintf(stderr, "InterpretedVm<Allocator, softAes>::execute14\n");
 	}
 
 	template<class Allocator, bool softAes>

@@ -214,12 +214,12 @@ endif()
 set(RANDOMX_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "RandomX Include path")
 
 # Define variables for custom preprocessor definitions with default values
-set(SYMBOL_PREFIX "" CACHE STRING "Prefix to be added to all symbols in the static library")
+option(USE_HIDDEN_VISIBILITY "Include -fvisibility=hidden flag" OFF)
 set(RANDOMX_ARGON_MEMORY "" CACHE STRING "Set the RANDOMX_ARGON_MEMORY value")
 set(RANDOMX_DATASET_BASE_SIZE "" CACHE STRING "Set the RANDOMX_DATASET_BASE_SIZE value")
 
-if(SYMBOL_PREFIX)
-  add_compile_options("-fsymbol-prefix=${SYMBOL_PREFIX}")
+if(USE_HIDDEN_VISIBILITY)
+  add_compile_options("-fvisibility=hidden")
 endif()
 
 add_library(randomx ${randomx_sources})
