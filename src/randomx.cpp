@@ -393,6 +393,41 @@ extern "C" {
 #endif
 	}
 
+	const unsigned char *randomx_calculate_hash_scratchpad(randomx_vm *machine, const void *input, size_t inputSize, const int randomxProgramCount)
+	{
+		assert(machine != nullptr);
+		assert(inputSize == 0 || input != nullptr);
+
+#ifdef USE_CSR_INTRINSICS
+		const unsigned int fpstate = _mm_getcsr();
+#else
+		fenv_t fpstate;
+		fegetenv(&fpstate);
+#endif
+
+		alignas(16) uint64_t tempHash[8];
+		int blakeResult = blake2b(tempHash, sizeof(tempHash), input, inputSize, nullptr, 0);
+		assert(blakeResult == 0);
+		machine->initScratchpad(&tempHash);
+		machine->resetRoundingMode();
+		for (int chain = 0; chain < randomxProgramCount - 1; ++chain) {
+			machine->run(&tempHash);
+			blakeResult = blake2b(tempHash, sizeof(tempHash), machine->getRegisterFile(), sizeof(randomx::RegisterFile), nullptr, 0);
+			assert(blakeResult == 0);
+		}
+		machine->run(&tempHash);
+		unsigned char output[64];
+		machine->getFinalResult(output, RANDOMX_HASH_SIZE);
+
+#ifdef USE_CSR_INTRINSICS
+		_mm_setcsr(fpstate);
+#else
+		fesetenv(&fpstate);
+#endif
+
+		return (const unsigned char*)machine->getScratchpad();
+	}
+
 	void randomx_calculate_hash_first(randomx_vm* machine, const void* input, size_t inputSize) {
 		blake2b(machine->tempHash, sizeof(machine->tempHash), input, inputSize, nullptr, 0);
 		machine->initScratchpad(machine->tempHash);

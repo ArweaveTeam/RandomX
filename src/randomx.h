@@ -247,6 +247,17 @@ RANDOMX_EXPORT void randomx_destroy_vm(randomx_vm *machine);
 RANDOMX_EXPORT void randomx_calculate_hash(randomx_vm *machine, const void *input, size_t inputSize, void *output);
 
 /**
+ * Calculates a RandomX long hash value.
+ * Long hash is effectively the vm scratchpad taken after finalizing the regular hash.
+ *
+ * @param machine is a pointer to a randomx_vm structure. Must not be NULL.
+ * @param input is a pointer to memory to be hashed. Must not be NULL.
+ * @param inputSize is the number of bytes to be hashed.
+ * @param randomxProgramCount a custom number of RandomX iterations.
+*/
+RANDOMX_EXPORT const unsigned char *randomx_calculate_hash_scratchpad(randomx_vm *machine, const void *input, size_t inputSize, const int randomxProgramCount);
+
+/**
  * Set of functions used to calculate multiple RandomX hashes more efficiently.
  * randomx_calculate_hash_first will begin a hash calculation.
  * randomx_calculate_hash_next  will output the hash value of the previous input
