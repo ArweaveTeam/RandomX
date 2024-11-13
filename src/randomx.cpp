@@ -138,6 +138,11 @@ extern "C" {
 		}
 	}
 
+	void *randomx_get_cache_memory(randomx_cache *cache) {
+		assert(cache != nullptr);
+		return cache->memory;
+	}
+
 	void randomx_release_cache(randomx_cache* cache) {
 		assert(cache != nullptr);
 		cache->dealloc(cache);
@@ -416,8 +421,6 @@ extern "C" {
 			assert(blakeResult == 0);
 		}
 		machine->run(&tempHash);
-		unsigned char output[64];
-		machine->getFinalResult(output, RANDOMX_HASH_SIZE);
 
 #ifdef USE_CSR_INTRINSICS
 		_mm_setcsr(fpstate);
