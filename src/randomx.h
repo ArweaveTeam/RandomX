@@ -120,6 +120,16 @@ RANDOMX_EXPORT randomx_cache *randomx_alloc_cache(randomx_flags flags);
 RANDOMX_EXPORT void randomx_init_cache(randomx_cache *cache, const void *key, size_t keySize);
 
 /**
+ * Returns a pointer to the internal memory buffer of the cache structure. The size
+ * of the internal memory buffer is RANDOMX_ARGON_MEMORY * ArgonBlockSize.
+ *
+ * @param cache is a pointer to a previously allocated randomx_cache structure. Must not be NULL.
+ *
+ * @return Pointer to the internal memory buffer of the cache structure.
+*/
+RANDOMX_EXPORT void *randomx_get_cache_memory(randomx_cache *cache);
+
+/**
  * Releases all memory occupied by the randomx_cache structure.
  *
  * @param cache is a pointer to a previously allocated randomx_cache structure.
@@ -238,6 +248,17 @@ RANDOMX_EXPORT void randomx_destroy_vm(randomx_vm *machine);
  *        be NULL and at least RANDOMX_HASH_SIZE bytes must be available for writing.
 */
 RANDOMX_EXPORT void randomx_calculate_hash(randomx_vm *machine, const void *input, size_t inputSize, void *output);
+
+/**
+ * Calculates a RandomX long hash value.
+ * Long hash is effectively the vm scratchpad taken after finalizing the regular hash.
+ *
+ * @param machine is a pointer to a randomx_vm structure. Must not be NULL.
+ * @param input is a pointer to memory to be hashed. Must not be NULL.
+ * @param inputSize is the number of bytes to be hashed.
+ * @param randomxProgramCount a custom number of RandomX iterations.
+*/
+RANDOMX_EXPORT const unsigned char *randomx_calculate_hash_scratchpad(randomx_vm *machine, const void *input, size_t inputSize, const int randomxProgramCount);
 
 /**
  * Set of functions used to calculate multiple RandomX hashes more efficiently.
