@@ -57,16 +57,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RANDOMX_DATASET_EXTRA_SIZE 31563008 // 493172 (just an arbitrary number) * 64, tweaked for Arweave
 
 //Number of instructions in a RandomX program. Must be divisible by 8.
+#ifndef RANDOMX_PROGRAM_SIZE
 #define RANDOMX_PROGRAM_SIZE       256
+#endif
 
 //Number of iterations during VM execution.
+#ifndef RANDOMX_PROGRAM_ITERATIONS
 #define RANDOMX_PROGRAM_ITERATIONS 2048
+#endif
 
 //Number of chained VM executions per hash.
+#ifndef RANDOMX_PROGRAM_COUNT
 #define RANDOMX_PROGRAM_COUNT      8
+#endif
 
 //Scratchpad L3 size in bytes. Must be a power of 2.
+#ifndef RANDOMX_SCRATCHPAD_L3
 #define RANDOMX_SCRATCHPAD_L3      2097152
+#endif
 
 //Scratchpad L2 size in bytes. Must be a power of two and less than or equal to RANDOMX_SCRATCHPAD_L3.
 #define RANDOMX_SCRATCHPAD_L2      262144
@@ -120,7 +128,9 @@ Total sum of frequencies must be 256
 #define RANDOMX_FREQ_CFROUND        1
 
 //Store instruction
+#ifndef RANDOMX_FREQ_ISTORE
 #define RANDOMX_FREQ_ISTORE        16
+#endif
 
 //No-op instruction
 #define RANDOMX_FREQ_NOP            0
