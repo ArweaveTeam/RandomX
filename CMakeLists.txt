@@ -221,7 +221,36 @@ set(RANDOMX_PROGRAM_SIZE "" CACHE STRING "Set the RANDOMX_PROGRAM_SIZE value")
 set(RANDOMX_PROGRAM_ITERATIONS "" CACHE STRING "Set the RANDOMX_PROGRAM_ITERATIONS value")
 set(RANDOMX_PROGRAM_COUNT "" CACHE STRING "Set the RANDOMX_PROGRAM_COUNT value")
 set(RANDOMX_SCRATCHPAD_L3 "" CACHE STRING "Set the RANDOMX_SCRATCHPAD_L3 value")
+set(RANDOMX_FREQ_IADD_RS "" CACHE STRING "Set the RANDOMX_FREQ_IADD_RS value")
+set(RANDOMX_FREQ_IADD_M "" CACHE STRING "Set the RANDOMX_FREQ_IADD_M value")
+set(RANDOMX_FREQ_ISUB_R "" CACHE STRING "Set the RANDOMX_FREQ_ISUB_R value")
+set(RANDOMX_FREQ_ISUB_M "" CACHE STRING "Set the RANDOMX_FREQ_ISUB_M value")
+set(RANDOMX_FREQ_IMUL_R "" CACHE STRING "Set the RANDOMX_FREQ_IMUL_R value")
+set(RANDOMX_FREQ_IMUL_M "" CACHE STRING "Set the RANDOMX_FREQ_IMUL_M value")
+set(RANDOMX_FREQ_IMULH_R "" CACHE STRING "Set the RANDOMX_FREQ_IMULH_R value")
+set(RANDOMX_FREQ_IMULH_M "" CACHE STRING "Set the RANDOMX_FREQ_IMULH_M value")
+set(RANDOMX_FREQ_ISMULH_R "" CACHE STRING "Set the RANDOMX_FREQ_ISMULH_R value")
+set(RANDOMX_FREQ_ISMULH_M "" CACHE STRING "Set the RANDOMX_FREQ_ISMULH_M value")
+set(RANDOMX_FREQ_IMUL_RCP "" CACHE STRING "Set the RANDOMX_FREQ_IMUL_RCP value")
+set(RANDOMX_FREQ_INEG_R "" CACHE STRING "Set the RANDOMX_FREQ_INEG_R value")
+set(RANDOMX_FREQ_IXOR_R "" CACHE STRING "Set the RANDOMX_FREQ_IXOR_R value")
+set(RANDOMX_FREQ_IXOR_M "" CACHE STRING "Set the RANDOMX_FREQ_IXOR_M value")
+set(RANDOMX_FREQ_IROR_R "" CACHE STRING "Set the RANDOMX_FREQ_IROR_R value")
+set(RANDOMX_FREQ_IROL_R "" CACHE STRING "Set the RANDOMX_FREQ_IROL_R value")
+set(RANDOMX_FREQ_ISWAP_R "" CACHE STRING "Set the RANDOMX_FREQ_ISWAP_R value")
+set(RANDOMX_FREQ_FSWAP_R "" CACHE STRING "Set the RANDOMX_FREQ_FSWAP_R value")
+set(RANDOMX_FREQ_FADD_R "" CACHE STRING "Set the RANDOMX_FREQ_FADD_R value")
+set(RANDOMX_FREQ_FADD_M "" CACHE STRING "Set the RANDOMX_FREQ_FADD_M value")
+set(RANDOMX_FREQ_FSUB_R "" CACHE STRING "Set the RANDOMX_FREQ_FSUB_R value")
+set(RANDOMX_FREQ_FSUB_M "" CACHE STRING "Set the RANDOMX_FREQ_FSUB_M value")
+set(RANDOMX_FREQ_FSCAL_R "" CACHE STRING "Set the RANDOMX_FREQ_FSCAL_R value")
+set(RANDOMX_FREQ_FMUL_R "" CACHE STRING "Set the RANDOMX_FREQ_FMUL_R value")
+set(RANDOMX_FREQ_FDIV_M "" CACHE STRING "Set the RANDOMX_FREQ_FDIV_M value")
+set(RANDOMX_FREQ_FSQRT_R "" CACHE STRING "Set the RANDOMX_FREQ_FSQRT_R value")
+set(RANDOMX_FREQ_CBRANCH "" CACHE STRING "Set the RANDOMX_FREQ_CBRANCH value")
+set(RANDOMX_FREQ_CFROUND "" CACHE STRING "Set the RANDOMX_FREQ_CFROUND value")
 set(RANDOMX_FREQ_ISTORE "" CACHE STRING "Set the RANDOMX_FREQ_ISTORE value")
+set(RANDOMX_FREQ_NOP "" CACHE STRING "Set the RANDOMX_FREQ_NOP value")
 
 if(USE_HIDDEN_VISIBILITY)
   add_compile_options("-fvisibility=hidden")
@@ -254,8 +283,124 @@ if(RANDOMX_SCRATCHPAD_L3)
   target_compile_definitions(randomx PRIVATE RANDOMX_SCRATCHPAD_L3=${RANDOMX_SCRATCHPAD_L3})
 endif()
 
+if(RANDOMX_FREQ_IADD_RS)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IADD_RS=${RANDOMX_FREQ_IADD_RS})
+endif()
+
+if(RANDOMX_FREQ_IADD_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IADD_M=${RANDOMX_FREQ_IADD_M})
+endif()
+
+if(RANDOMX_FREQ_ISUB_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISUB_R=${RANDOMX_FREQ_ISUB_R})
+endif()
+
+if(RANDOMX_FREQ_ISUB_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISUB_M=${RANDOMX_FREQ_ISUB_M})
+endif()
+
+if(RANDOMX_FREQ_IMUL_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IMUL_R=${RANDOMX_FREQ_IMUL_R})
+endif()
+
+if(RANDOMX_FREQ_IMUL_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IMUL_M=${RANDOMX_FREQ_IMUL_M})
+endif()
+
+if(RANDOMX_FREQ_IMULH_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IMULH_R=${RANDOMX_FREQ_IMULH_R})
+endif()
+
+if(RANDOMX_FREQ_IMULH_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IMULH_M=${RANDOMX_FREQ_IMULH_M})
+endif()
+
+if(RANDOMX_FREQ_ISMULH_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISMULH_R=${RANDOMX_FREQ_ISMULH_R})
+endif()
+
+if(RANDOMX_FREQ_ISMULH_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISMULH_M=${RANDOMX_FREQ_ISMULH_M})
+endif()
+
+if(RANDOMX_FREQ_IMUL_RCP)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IMUL_RCP=${RANDOMX_FREQ_IMUL_RCP})
+endif()
+
+if(RANDOMX_FREQ_INEG_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_INEG_R=${RANDOMX_FREQ_INEG_R})
+endif()
+
+if(RANDOMX_FREQ_IXOR_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IXOR_R=${RANDOMX_FREQ_IXOR_R})
+endif()
+
+if(RANDOMX_FREQ_IXOR_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IXOR_M=${RANDOMX_FREQ_IXOR_M})
+endif()
+
+if(RANDOMX_FREQ_IROR_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IROR_R=${RANDOMX_FREQ_IROR_R})
+endif()
+
+if(RANDOMX_FREQ_IROL_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_IROL_R=${RANDOMX_FREQ_IROL_R})
+endif()
+
+if(RANDOMX_FREQ_ISWAP_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISWAP_R=${RANDOMX_FREQ_ISWAP_R})
+endif()
+
+if(RANDOMX_FREQ_FSWAP_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FSWAP_R=${RANDOMX_FREQ_FSWAP_R})
+endif()
+
+if(RANDOMX_FREQ_FADD_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FADD_R=${RANDOMX_FREQ_FADD_R})
+endif()
+
+if(RANDOMX_FREQ_FADD_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FADD_M=${RANDOMX_FREQ_FADD_M})
+endif()
+
+if(RANDOMX_FREQ_FSUB_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FSUB_R=${RANDOMX_FREQ_FSUB_R})
+endif()
+
+if(RANDOMX_FREQ_FSUB_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FSUB_M=${RANDOMX_FREQ_FSUB_M})
+endif()
+
+if(RANDOMX_FREQ_FSCAL_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FSCAL_R=${RANDOMX_FREQ_FSCAL_R})
+endif()
+
+if(RANDOMX_FREQ_FMUL_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FMUL_R=${RANDOMX_FREQ_FMUL_R})
+endif()
+
+if(RANDOMX_FREQ_FDIV_M)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FDIV_M=${RANDOMX_FREQ_FDIV_M})
+endif()
+
+if(RANDOMX_FREQ_FSQRT_R)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_FSQRT_R=${RANDOMX_FREQ_FSQRT_R})
+endif()
+
+if(RANDOMX_FREQ_CBRANCH)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_CBRANCH=${RANDOMX_FREQ_CBRANCH})
+endif()
+
+if(RANDOMX_FREQ_CFROUND)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_CFROUND=${RANDOMX_FREQ_CFROUND})
+endif()
+
 if(RANDOMX_FREQ_ISTORE)
   target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_ISTORE=${RANDOMX_FREQ_ISTORE})
+endif()
+
+if(RANDOMX_FREQ_NOP)
+  target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_NOP=${RANDOMX_FREQ_NOP})
 endif()
 
 if(TARGET generate-asm)
