@@ -253,6 +253,7 @@ set(RANDOMX_FREQ_CBRANCH "" CACHE STRING "Set the RANDOMX_FREQ_CBRANCH value")
 set(RANDOMX_FREQ_CFROUND "" CACHE STRING "Set the RANDOMX_FREQ_CFROUND value")
 set(RANDOMX_FREQ_ISTORE "" CACHE STRING "Set the RANDOMX_FREQ_ISTORE value")
 set(RANDOMX_FREQ_NOP "" CACHE STRING "Set the RANDOMX_FREQ_NOP value")
+set(RANDOMX_UNSAFE "" CACHE STRING "Set the RANDOMX_UNSAFE value")
 
 if(USE_HIDDEN_VISIBILITY)
   add_compile_options("-fvisibility=hidden")
@@ -411,6 +412,10 @@ endif()
 
 if(RANDOMX_FREQ_NOP)
   target_compile_definitions(randomx PRIVATE RANDOMX_FREQ_NOP=${RANDOMX_FREQ_NOP})
+endif()
+
+if(RANDOMX_UNSAFE)
+  target_compile_definitions(randomx PRIVATE RANDOMX_UNSAFE=${RANDOMX_UNSAFE})
 endif()
 
 if(TARGET generate-asm)
