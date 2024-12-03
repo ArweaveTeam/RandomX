@@ -183,6 +183,10 @@ extern "C" {
 		return DatasetItemCount;
 	}
 
+	unsigned long randomx_get_scratchpad_size() {
+		return randomx::ScratchpadSize;
+	}
+
 	void randomx_init_dataset(randomx_dataset *dataset, randomx_cache *cache, unsigned long startItem, unsigned long itemCount) {
 		assert(dataset != nullptr);
 		assert(cache != nullptr);

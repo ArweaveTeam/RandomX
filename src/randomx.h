@@ -175,6 +175,13 @@ RANDOMX_EXPORT void *randomx_get_dataset_memory(randomx_dataset *dataset);
 RANDOMX_EXPORT void randomx_release_dataset(randomx_dataset *dataset);
 
 /**
+ * Gets size of the scratchpad in bytes.
+ *
+ * @return the size of the scratchpad in bytes.
+*/
+RANDOMX_EXPORT unsigned long randomx_get_scratchpad_size(void);
+
+/**
  * Creates and initializes a RandomX virtual machine.
  *
  * @param flags is any combination of these 5 flags (each flag can be set or not set):
