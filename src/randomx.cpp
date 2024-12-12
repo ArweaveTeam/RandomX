@@ -431,6 +431,36 @@ extern "C" {
 		return (const unsigned char*)machine->getScratchpad();
 	}
 
+	void randomx_calculate_hash_with_scratchpad_with_presets(randomx_vm *machine, unsigned char *inHash, const int randomxProgramCount) {
+
+		assert(machine != nullptr);
+
+#ifdef USE_CSR_INTRINSICS
+		const unsigned int fpstate = _mm_getcsr();
+#else
+		fenv_t fpstate;
+		fegetenv(&fpstate);
+#endif
+
+		int blakeResult;
+		for (int chain = 0; chain < randomxProgramCount; ++chain) {
+			machine->run(inHash);
+			blakeResult = randomx_blake2b(inHash, sizeof(inHash), machine->getRegisterFile(), sizeof(randomx::RegisterFile), nullptr, 0);
+			assert(blakeResult == 0);
+		}
+
+#ifdef USE_CSR_INTRINSICS
+		_mm_setcsr(fpstate);
+#else
+		fesetenv(&fpstate);
+#endif
+	}
+
+	unsigned char *randomx_get_scratchpad(randomx_vm *machine) {
+		assert(machine != nullptr);
+		return (unsigned char*)machine->getScratchpad();
+	}
+
 	void randomx_calculate_hash_first(randomx_vm* machine, const void* input, size_t inputSize) {
 		blake2b(machine->tempHash, sizeof(machine->tempHash), input, inputSize, nullptr, 0);
 		machine->initScratchpad(machine->tempHash);
