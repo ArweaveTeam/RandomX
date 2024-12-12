@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "vm_compiled.hpp"
 #include "vm_compiled_light.hpp"
 #include "blake2/blake2.h"
+#include "aes_hash_bindgen.h"
 #include "cpu.hpp"
 #include <cassert>
 #include <limits>
@@ -442,12 +443,15 @@ extern "C" {
 		fegetenv(&fpstate);
 #endif
 
+		alignas(16) uint64_t tempHash[8];
+		memcpy(tempHash, inHash, sizeof(tempHash));
 		int blakeResult;
 		for (int chain = 0; chain < randomxProgramCount; ++chain) {
-			machine->run(inHash);
-			blakeResult = randomx_blake2b(inHash, sizeof(inHash), machine->getRegisterFile(), sizeof(randomx::RegisterFile), nullptr, 0);
+			machine->run(tempHash);
+			blakeResult = randomx_blake2b(tempHash, sizeof(tempHash), machine->getRegisterFile(), sizeof(randomx::RegisterFile), nullptr, 0);
 			assert(blakeResult == 0);
 		}
+		memcpy(inHash, tempHash, sizeof(tempHash));
 
 #ifdef USE_CSR_INTRINSICS
 		_mm_setcsr(fpstate);

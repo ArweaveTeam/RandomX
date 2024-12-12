@@ -1,6 +1,8 @@
 #include "aes_hash.hpp"
+#include "aes_hash_bindgen.h"
 
 extern "C" {
+
     void hashAes1Rx4_soft(const void *input, size_t inputSize, void *hash) {
         hashAes1Rx4<true>(input, inputSize, hash);
     }
@@ -32,4 +34,5 @@ extern "C" {
     void hashAndFillAes1Rx4_hard(void *scratchpad, size_t scratchpadSize, void *hash, void* fill_state) {
         hashAndFillAes1Rx4<false>(scratchpad, scratchpadSize, hash, fill_state);
     }
+
 }
